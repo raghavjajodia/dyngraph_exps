@@ -67,7 +67,7 @@ def removeSelfEdges(edgeList, colFrom, colTo):
 # In[112]:
 
 
-#Loading 
+#Loading
 graphs = []
 
 data  = np.loadtxt(data_path, delimiter=',').astype(np.int64)
@@ -87,10 +87,10 @@ for i in range(time_index.max()):
     rate = data[row_mask][:, 2]
     diffmask = np.arange(len(edges)) >= prevind
     g.add_edges(edges[:, 0], edges[:, 1])
-    g.edata['h'] = torch.FloatTensor(rate.reshape(-1, 1))
+    g.edata['feat'] = torch.FloatTensor(rate.reshape(-1, 1))
     g.edata['diff'] = diffmask
-    g.ndata['h'] = torch.zeros(num_nodes, node_dim)
-    
+    g.ndata['feat'] = torch.zeros(num_nodes, node_dim)
+
     if self_loop == True:
         g.add_edges(g.nodes(), g.nodes())
         
@@ -157,10 +157,10 @@ def evaluate_loss(model, criterion, device, valid_graphs):
     #validation phase
     with torch.set_grad_enabled(False):
         for val_graph in valid_graphs:
-            feats = val_graph.ndata['h']
+            feats = val_graph.ndata['feat']
             feats = feats.to(device)
             outputs = model(feats, val_graph)
-            labels = val_graph.edata['h']
+            labels = val_graph.edata['feat']
             labels = labels.to(device)
             outputs = outputs[val_graph.edata['diff']]
             labels = labels[val_graph.edata['diff']]
@@ -202,10 +202,10 @@ def train_model(model, criterion, optimizer, scheduler, device, checkpoint_path,
         # track history if only in train
         forward_start_time  = time.time()
         with torch.set_grad_enabled(True):
-            feats = train_graph.ndata['h']
+            feats = train_graph.ndata['feat']
             feats = feats.to(device)
             outputs = model(feats, train_graph)
-            labels = train_graph.edata['h']
+            labels = train_graph.edata['feat']
             labels = labels.to(device)
             outputs = outputs[~train_graph.edata['self_edge']]
             labels = labels[~train_graph.edata['self_edge']]
