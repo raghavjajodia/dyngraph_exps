@@ -11,7 +11,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from dgl import DGLGraph
 from dgl.data import register_data_args, load_data
-from dgl.data import BitcoinOTC
 import datetime
 from dgl.nn.pytorch import GraphConv
 import time
@@ -39,7 +38,8 @@ learning_rate = 0.01
 wt_decay = 5e-4
 stpsize = 15
 n_epochs = 10
-out_path = '../btc_static/'
+out_path = '/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/'
+data_path = '/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/data/btcotc/soc-sign-bitcoinotc.csv'
 self_loop = True
 
 
@@ -64,24 +64,13 @@ def removeSelfEdges(edgeList, colFrom, colTo):
     return edgeList
 
 
-# In[102]:
-
-
-#Trying DGL's implementation of BitcoinOTC class
-data = BitcoinOTC()
-print("Number of graphs: ")
-print(len(data.graphs))
-traingr = data.graphs[94]
-traingr.number_of_edges()
-
-
 # In[112]:
 
 
 #Loading 
 graphs = []
 
-data  = np.loadtxt('../soc-sign-bitcoinotc.csv', delimiter=',').astype(np.int64)
+data  = np.loadtxt(data_path, delimiter=',').astype(np.int64)
 data[:, 0:2] = data[:, 0:2] - data[:, 0:2].min()
 data = removeSelfEdges(data, 0, 1)
 num_nodes = data[:, 0:2].max() - data[:, 0:2].min() + 1
@@ -268,7 +257,7 @@ bst_model = train_model(model, criterion, optimizer, exp_lr_scheduler, device, o
 
 
 # In[ ]:
-
+print("Test loss: ", evaluate_loss(bst_model, criterion, device, test_graphs))
 
 
 
