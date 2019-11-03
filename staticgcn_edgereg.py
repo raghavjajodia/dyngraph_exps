@@ -42,6 +42,17 @@ parser.set_defaults(self_loop=True)
 args = parser.parse_args()
 print(args)
 
+dropout = args.dropout
+learning_rate = args.learning_rate
+n_epochs = args.n_epochs
+n_layers = args.n_layers
+wt_decay = args.wt_decay
+self_loop = args.self_loop
+node_dim = args.node_dim
+stpsize = args.stpsize
+out_path = args.out_path
+data_path = args.data_path
+
 # ## Hyperparams
 
 #out_path = '/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/'
