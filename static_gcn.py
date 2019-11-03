@@ -157,8 +157,11 @@ def evaluate_loss(model, criterion, device, valid_graphs):
     #validation phase
     with torch.set_grad_enabled(False):
         for val_graph in valid_graphs:
-            outputs = model(val_graph.ndata['h'], val_graph)
+            feats = val_graph.ndata['h']
+            feats = feats.to(device)
+            outputs = model(feats, val_graph)
             labels = val_graph.edata['h']
+            labels = labels.to(device)
             outputs = outputs[val_graph.edata['diff']]
             labels = labels[val_graph.edata['diff']]
             num_samples += labels.shape[0] 
@@ -199,8 +202,11 @@ def train_model(model, criterion, optimizer, scheduler, device, checkpoint_path,
         # track history if only in train
         forward_start_time  = time.time()
         with torch.set_grad_enabled(True):
-            outputs = model(train_graph.ndata['h'], train_graph)
+            feats = train_graph.ndata['h']
+            feats = feats.to(device)
+            outputs = model(feats, train_graph)
             labels = train_graph.edata['h']
+            labels = labels.to(device)
             outputs = outputs[~train_graph.edata['self_edge']]
             labels = labels[~train_graph.edata['self_edge']]
             loss = criterion(outputs, labels)
