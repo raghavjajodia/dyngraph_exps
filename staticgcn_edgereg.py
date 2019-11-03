@@ -25,26 +25,29 @@ import time
 import copy
 import matplotlib.pyplot as plt
 
+parser = argparse.ArgumentParser(description='GCN')
+parser.add_argument("--dropout", type=float, default=0.2, help="dropout probability")
+parser.add_argument("--gpu", type=int, default=-1, help="gpu")
+parser.add_argument("--learning-rate", type=float, default=1e-2, help="learning rate")
+parser.add_argument("--n-epochs", type=int, default=200, help="number of training epochs")
+parser.add_argument("--n-layers", type=int, default=2, help="number of hidden gcn layers")
+parser.add_argument("--wt-decay", type=float, default=5e-4, help="Weight for L2 loss")
+parser.add_argument("--self-loop", action='store_true', help="graph self-loop (default=True)")
+parser.add_argument("--node-dim", type=int, default=256, help="hidden dim")
+parser.add_argument("--stpsize", type=int, default=15, help="Step size")
+parser.add_argument("--out-path", type=str, help="Model out directory")
+parser.add_argument("--data-path", type=str, help="Data path")
+
+parser.set_defaults(self_loop=True)
+args = parser.parse_args()
+print(args)
 
 # ## Hyperparams
 
-# In[99]:
-
-
-node_dim = 256
-n_layers = 2
-dropout = 0.2
-learning_rate = 0.01
-wt_decay = 5e-4
-stpsize = 15
-n_epochs = 10
-out_path = '/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/'
-data_path = '/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/data/btcotc/soc-sign-bitcoinotc.csv'
-self_loop = True
-
+#out_path = '/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/'
+#data_path = '/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/data/btcotc/soc-sign-bitcoinotc.csv'
 
 # In[100]:
-
 
 num_gpus = torch.cuda.device_count()
 if num_gpus > 0:
