@@ -153,7 +153,9 @@ def evaluate_f1(model, criterion, device, valid_graphs):
     #validation phase
     with torch.set_grad_enabled(False):
         for i, val_graph in enumerate(valid_graphs):
-            outputs = model(val_graph.ndata['feat'], val_graph)
+            feats = val_graph.ndata['feat']
+            feats = feats.to(device)
+            outputs = model(feats, val_graph)
             labels = val_graph.edata['feat']
             outputs = outputs[val_graph.edata['diff']]
             outputs = outputs.round().long()
