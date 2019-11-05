@@ -99,9 +99,9 @@ class GCN(nn.Module):
         for i in range(n_layers - 1):
             self.layers.append(GraphConv(n_hidden, n_hidden, activation=activation))
         # output layer
-        self.distrlayer = nn.Linear(2 * n_hidden, 64, bias = True)
-        self.nonlinear = nn.ReLU()
-        self.outlayer = nn.Linear(64, 1, bias = True)
+        #self.distrlayer = nn.Linear(2 * n_hidden, 64, bias = True)
+        #self.nonlinear = nn.ReLU()
+        self.outlayer = nn.Linear(2 * n_hidden, 1, bias = True)
         self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, features, g):
@@ -113,9 +113,9 @@ class GCN(nn.Module):
         srcfeatures = torch.stack(list(map(lambda nd: h[nd], g.all_edges()[0])))
         destfeatures = torch.stack(list(map(lambda nd: h[nd], g.all_edges()[1])))
         edgefeatures = torch.cat((srcfeatures, destfeatures), dim = 1)
-        outputs = self.nonlinear(self.distrlayer(edgefeatures))
-        outputs = self.outlayer(outputs)
-        outputs = 20*torch.sigmoid(outputs) - 10
+        #outputs = self.nonlinear(self.distrlayer(edgefeatures))
+        outputs = self.outlayer(edgefeatures)
+        outputs = 20*torch.sigmoid(outputs) - 1
         return outputs
 
 
