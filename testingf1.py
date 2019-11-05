@@ -284,7 +284,18 @@ def train_model(model, criterion, optimizer, scheduler, device, checkpoint_path,
 
 # In[ ]:
 
-
+modelpath = ''
+checkpoint = torch.load(modelpath, map_location=device)
+hyperdic = checkpoint['hyperparams']
+node_dim = hyperdic['node_dim']
+n_layers = hyperdic['n_layers']
+dropout = hyperdic['dropout']
+wt_decay = hyperdic['wt_decay']
+model = GCN(node_dim, node_dim, n_layers, F.relu, dropout)
+model.to(device)
+model.load_state_dict(checkpoint['model_state_dict'])
+criterion = nn.MSELoss()
+    
 # create GCN model
 model = GCN(node_dim, node_dim, n_layers, F.relu, dropout)
 model.to(device)
@@ -304,4 +315,4 @@ bst_model = train_model(model, criterion, optimizer, exp_lr_scheduler, device, o
 print("Test loss: ", evaluate_loss(bst_model, criterion, device, test_graphs))
 
 
-
+    
