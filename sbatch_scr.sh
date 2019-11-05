@@ -15,7 +15,7 @@ module purge
 
 eval "$(conda shell.bash hook)"
 conda activate dgl_env
-srun python3 dyngraph_exps/staticgcn_edgereg.py \
+srun python3 staticgcn_edgereg.py \
     --out-path /misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/def/ \
  --data-path /misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/data/btcotc/soc-sign-bitcoinotc.csv \
  --learning-rate 0.1  --n-epochs 200 --stpsize 50
