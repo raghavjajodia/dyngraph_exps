@@ -165,8 +165,8 @@ def evaluate_f1(model, criterion, device, valid_graphs):
                 all_outputs = outputs
                 all_labels = labels
             else:
-                all_outputs = torch.stack((all_outputs, outputs))
-                all_labels = torch.stack((all_labels, labels))
+                all_outputs = torch.cat((all_outputs, outputs), dim=0)
+                all_labels = torch.cat((all_labels, labels), dim=0)
         all_outputs = all_outputs.detach().numpy()
         all_labels = all_labels.detach().numpy()
         f1score = f1_score(all_labels, all_outputs, average='micro')
