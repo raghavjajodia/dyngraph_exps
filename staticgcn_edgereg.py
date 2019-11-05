@@ -14,7 +14,7 @@ from dgl.data import register_data_args, load_data
 import datetime
 from dgl.nn.pytorch import GraphConv
 import time
-
+from sklearn.metrics import f1_score
 import os
 import json
 from collections import defaultdict, Counter
@@ -194,7 +194,8 @@ def evaluate_f1(model, criterion, device, valid_graphs):
     #validation phase
     with torch.set_grad_enabled(False):
         for i, val_graph in enumerate(valid_graphs):
-            outputs = model(val_graph.ndata['feat'], val_graph)
+            feats = val_graph.ndata['feat'].to(device)
+            outputs = model(feats, val_graph)
             labels = val_graph.edata['feat']
             outputs = outputs[val_graph.edata['diff']]
             outputs = outputs.round().long()
@@ -204,10 +205,10 @@ def evaluate_f1(model, criterion, device, valid_graphs):
                 all_outputs = outputs
                 all_labels = labels
             else:
-                all_outputs = torch.stack((all_outputs, outputs))
-                all_labels = torch.stack((all_labels, labels))
-        all_outputs = all_outputs.detach().numpy()
-        all_labels = all_labels.detach().numpy()
+                all_outputs = torch.cat((all_outputs, outputs), dim=0)
+                all_labels = torch.cat((all_labels, labels), dim=0)
+        all_outputs = all_outputs.detach().cpu().numpy()
+        all_labels = all_labels.detach().cpu().numpy()
         f1score = f1_score(all_labels, all_outputs, average='micro')
     return f1score
 

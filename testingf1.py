@@ -14,7 +14,7 @@ from dgl.data import register_data_args, load_data
 import datetime
 from dgl.nn.pytorch import GraphConv
 import time
-
+from sklearn.metrics import f1_score
 import os
 import json
 from collections import defaultdict, Counter
@@ -167,8 +167,8 @@ def evaluate_f1(model, criterion, device, valid_graphs):
             else:
                 all_outputs = torch.cat((all_outputs, outputs), dim=0)
                 all_labels = torch.cat((all_labels, labels), dim=0)
-        all_outputs = all_outputs.detach().numpy()
-        all_labels = all_labels.detach().numpy()
+        all_outputs = all_outputs.detach().cpu().numpy()
+        all_labels = all_labels.detach().cpu().numpy()
         f1score = f1_score(all_labels, all_outputs, average='micro')
     return f1score
 
