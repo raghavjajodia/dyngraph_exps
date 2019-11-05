@@ -217,10 +217,9 @@ def train_model(model, criterion, optimizer, scheduler, device, checkpoint_path,
     metrics_dict = {}
     metrics_dict["train"] = {}
     metrics_dict["valid"] = {}
-    metrics_dict["train"]["loss"] = {}
-    metrics_dict["train"]["loss"]["epochwise"] = []
-    metrics_dict["valid"]["loss"] = {}
-    metrics_dict["valid"]["loss"]["epochwise"] = []
+    metrics_dict["train"]["loss"] = []
+    metrics_dict["valid"]["loss"] = []
+    metrics_dict["valid"]["f1"] = []
         
     since = time.time()
 
@@ -254,12 +253,13 @@ def train_model(model, criterion, optimizer, scheduler, device, checkpoint_path,
         forward_time = time.time() - forward_start_time
         
         print('Train Loss: {:.4f} \n'.format(epoch_loss))
-        metrics_dict["train"]["loss"]["epochwise"].append(epoch_loss)
+        metrics_dict["train"]["loss"].append(epoch_loss)
         
         #validation phase
         val_epoch_loss = evaluate_loss(model, criterion, device, valid_graphs)
         print('Validation Loss: {:.4f} \n'.format(val_epoch_loss))
-        metrics_dict["valid"]["loss"]["epochwise"].append(val_epoch_loss)
+        metrics_dict["valid"]["loss"].append(val_epoch_loss)
+        metrics_dict["valid"]["f1"].append(evaluate_f1(model, criterion, device, valid_graphs))
         
         # deep copy the model
         if epoch_loss < best_loss:
@@ -299,9 +299,4 @@ hyper_params = {'node_dim' : node_dim,
 
 bst_model = train_model(model, criterion, optimizer, exp_lr_scheduler, device, out_path, hyper_params, n_epochs)
 
-
-# In[ ]:
 print("Test loss: ", evaluate_loss(bst_model, criterion, device, test_graphs))
-
-
-

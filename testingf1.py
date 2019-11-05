@@ -284,7 +284,7 @@ def train_model(model, criterion, optimizer, scheduler, device, checkpoint_path,
 
 # In[ ]:
 
-modelpath = ''
+modelpath = '/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/2wtdecay/net_epoch_10.pth'
 checkpoint = torch.load(modelpath, map_location=device)
 hyperdic = checkpoint['hyperparams']
 node_dim = hyperdic['node_dim']
@@ -295,24 +295,14 @@ model = GCN(node_dim, node_dim, n_layers, F.relu, dropout)
 model.to(device)
 model.load_state_dict(checkpoint['model_state_dict'])
 criterion = nn.MSELoss()
-    
-# create GCN model
-model = GCN(node_dim, node_dim, n_layers, F.relu, dropout)
-model.to(device)
-criterion = nn.MSELoss()
 model_parameters = [p for p in model.parameters() if p.requires_grad]
-optimizer = optim.Adam(model_parameters, lr=learning_rate, weight_decay = wt_decay)
-exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=stpsize, gamma=0.1)
 hyper_params = {'node_dim' : node_dim,
    'n_layers' : n_layers,
    'dropout' : dropout,
    'wt_decay' : wt_decay }
 
-bst_model = train_model(model, criterion, optimizer, exp_lr_scheduler, device, out_path, hyper_params, n_epochs)
-
-
 # In[ ]:
-print("Test loss: ", evaluate_loss(bst_model, criterion, device, test_graphs))
+print("Test f1: ", evaluate_f1(bst_model, criterion, device, test_graphs))
 
 
     
