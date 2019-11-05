@@ -31,7 +31,7 @@ parser.add_argument("--gpu", type=int, default=-1, help="gpu")
 parser.add_argument("--learning-rate", type=float, default=1e-2, help="learning rate")
 parser.add_argument("--n-epochs", type=int, default=200, help="number of training epochs")
 parser.add_argument("--n-layers", type=int, default=2, help="number of hidden gcn layers")
-parser.add_argument("--wt-decay", type=float, default=5e-4, help="Weight for L2 loss")
+parser.add_argument("--wt-decay", type=float, default=5e-2, help="Weight for L2 loss")
 parser.add_argument("--self-loop", action='store_true', help="graph self-loop (default=True)")
 parser.add_argument("--node-dim", type=int, default=256, help="hidden dim")
 parser.add_argument("--stpsize", type=int, default=15, help="Step size")
@@ -77,47 +77,6 @@ def removeSelfEdges(edgeList, colFrom, colTo):
     edgeList = edgeList[mask]
     return edgeList
 
-
-# In[112]:
-
-
-#Loading
-graphs = []
-
-data  = np.loadtxt(data_path, delimiter=',').astype(np.int64)
-data[:, 0:2] = data[:, 0:2] - data[:, 0:2].min()
-data = removeSelfEdges(data, 0, 1)
-num_nodes = data[:, 0:2].max() - data[:, 0:2].min() + 1
-delta = datetime.timedelta(days=14).total_seconds()
-time_index = np.around(
-    (data[:, 3] - data[:, 3].min())/delta).astype(np.int64)
-
-prevind = 0
-for i in range(time_index.max()):
-    g = DGLGraph()
-    g.add_nodes(num_nodes)
-    row_mask = time_index <= i
-    edges = data[row_mask][:, 0:2]
-    rate = data[row_mask][:, 2]
-    diffmask = np.arange(len(edges)) >= prevind
-    g.add_edges(edges[:, 0], edges[:, 1])
-    g.edata['feat'] = torch.FloatTensor(rate.reshape(-1, 1))
-    g.edata['diff'] = diffmask
-    g.ndata['feat'] = torch.zeros(num_nodes, node_dim)
-
-    if self_loop == True:
-        g.add_edges(g.nodes(), g.nodes())
-        
-    selfedgemask = np.zeros(g.number_of_edges(), dtype = bool)
-    selfedgemask[-g.number_of_nodes():] = True
-    g.edata['self_edge'] = selfedgemask
-    
-    graphs.append(g)
-    prevind = len(edges)
-    
-train_graph = graphs[94]
-valid_graphs = graphs[95:109]
-test_graphs = graphs[109:]
 
 
 # ## Model definition
@@ -295,14 +254,51 @@ model = GCN(node_dim, node_dim, n_layers, F.relu, dropout)
 model.to(device)
 model.load_state_dict(checkpoint['model_state_dict'])
 criterion = nn.MSELoss()
-model_parameters = [p for p in model.parameters() if p.requires_grad]
-hyper_params = {'node_dim' : node_dim,
-   'n_layers' : n_layers,
-   'dropout' : dropout,
-   'wt_decay' : wt_decay }
+
+# In[112]:
+
+
+#Loading
+graphs = []
+
+data  = np.loadtxt(data_path, delimiter=',').astype(np.int64)
+data[:, 0:2] = data[:, 0:2] - data[:, 0:2].min()
+data = removeSelfEdges(data, 0, 1)
+num_nodes = data[:, 0:2].max() - data[:, 0:2].min() + 1
+delta = datetime.timedelta(days=14).total_seconds()
+time_index = np.around(
+    (data[:, 3] - data[:, 3].min())/delta).astype(np.int64)
+
+prevind = 0
+for i in range(time_index.max()):
+    g = DGLGraph()
+    g.add_nodes(num_nodes)
+    row_mask = time_index <= i
+    edges = data[row_mask][:, 0:2]
+    rate = data[row_mask][:, 2]
+    diffmask = np.arange(len(edges)) >= prevind
+    g.add_edges(edges[:, 0], edges[:, 1])
+    g.edata['feat'] = torch.FloatTensor(rate.reshape(-1, 1))
+    g.edata['diff'] = diffmask
+    g.ndata['feat'] = torch.zeros(num_nodes, node_dim)
+
+    if self_loop == True:
+        g.add_edges(g.nodes(), g.nodes())
+        
+    selfedgemask = np.zeros(g.number_of_edges(), dtype = bool)
+    selfedgemask[-g.number_of_nodes():] = True
+    g.edata['self_edge'] = selfedgemask
+    
+    graphs.append(g)
+    prevind = len(edges)
+    
+train_graph = graphs[94]
+valid_graphs = graphs[95:109]
+test_graphs = graphs[109:]
+
 
 # In[ ]:
-print("Test f1: ", evaluate_f1(bst_model, criterion, device, test_graphs))
+print("Test f1: ", evaluate_f1(model, criterion, device, test_graphs))
 
 
     
