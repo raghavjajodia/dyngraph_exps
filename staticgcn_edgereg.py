@@ -263,8 +263,8 @@ def train_model(model, criterion, optimizer, scheduler, device, checkpoint_path,
         metrics_dict["valid"]["f1"].append(evaluate_f1(model, criterion, device, valid_graphs))
         
         # deep copy the model
-        if epoch_loss < best_loss:
-            best_loss = epoch_loss
+        if val_epoch_loss < best_loss:
+            best_loss = val_epoch_loss
             best_model_wts = copy.deepcopy(model.state_dict())
 
         torch.save({
