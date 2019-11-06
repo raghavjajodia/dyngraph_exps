@@ -289,7 +289,7 @@ def train_model(model, criterion, optimizer, scheduler, device, checkpoint_path,
 
 
 # create GCN model
-model = GCN(node_dim, node_dim, n_layers, F.relu, dropout)
+model = GCN(num_nodes, node_dim, node_dim, n_layers, F.relu, dropout)
 model.to(device)
 criterion = nn.MSELoss()
 model_parameters = [p for p in model.parameters() if p.requires_grad]
