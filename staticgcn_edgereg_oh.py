@@ -33,7 +33,8 @@ parser.add_argument("--n-epochs", type=int, default=200, help="number of trainin
 parser.add_argument("--n-layers", type=int, default=2, help="number of hidden gcn layers")
 parser.add_argument("--wt-decay", type=float, default=5e-4, help="Weight for L2 loss")
 parser.add_argument("--self-loop", action='store_true', help="graph self-loop (default=True)")
-parser.add_argument("--node-dim", type=int, default=256, help="hidden dim")
+parser.add_argument("--node-dim", type=int, default=256, help="node dim")
+parser.add_argument("--hid-dim", type=int, default=256, help="hid dim")
 parser.add_argument("--stpsize", type=int, default=15, help="Step size")
 parser.add_argument("--out-path", type=str, help="Model out directory")
 parser.add_argument("--data-path", type=str, help="Data path")
@@ -49,6 +50,7 @@ n_layers = args.n_layers
 wt_decay = args.wt_decay
 self_loop = args.self_loop
 node_dim = args.node_dim
+hid_dim = args.hid_dim
 stpsize = args.stpsize
 out_path = args.out_path
 data_path = args.data_path
@@ -289,7 +291,7 @@ def train_model(model, criterion, optimizer, scheduler, device, checkpoint_path,
 
 
 # create GCN model
-model = GCN(num_nodes, node_dim, node_dim, n_layers, F.relu, dropout)
+model = GCN(num_nodes, node_dim, hid_dim, n_layers, F.relu, dropout)
 model.to(device)
 criterion = nn.MSELoss()
 model_parameters = [p for p in model.parameters() if p.requires_grad]
