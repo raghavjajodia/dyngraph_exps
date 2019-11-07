@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --output=/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/def/train_logs.out
-#SBATCH --error=/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/def/train_logs.err
-#SBATCH --job-name=def
+#SBATCH --output=/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/eye/train_logs.out
+#SBATCH --error=/misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/eye/train_logs.err
+#SBATCH --job-name=eye
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
@@ -15,7 +15,7 @@ module purge
 
 eval "$(conda shell.bash hook)"
 conda activate dgl_env
-srun python3 staticgcn_edgereg.py \
-    --out-path /misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/def/ \
+srun python3 staticgcn_edgereg_oh.py \
+    --out-path /misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/eye/ \
  --data-path /misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/data/btcotc/soc-sign-bitcoinotc.csv \
- --learning-rate 0.1  --n-epochs 200 --stpsize 50
+ -learning-rate 0.01  --n-epochs 100 --stpsize 20 --node-dim 128
