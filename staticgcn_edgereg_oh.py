@@ -33,7 +33,7 @@ parser.add_argument("--n-epochs", type=int, default=200, help="number of trainin
 parser.add_argument("--n-layers", type=int, default=2, help="number of hidden gcn layers")
 parser.add_argument("--wt-decay", type=float, default=5e-4, help="Weight for L2 loss")
 parser.add_argument("--self-loop", action='store_true', help="graph self-loop (default=True)")
-parser.add_argument("--node-dim", type=int, default=256, help="node dim")
+parser.add_argument("--node-dim", type=int, default=128, help="node dim")
 parser.add_argument("--hid-dim", type=int, default=256, help="hid dim")
 parser.add_argument("--stpsize", type=int, default=15, help="Step size")
 parser.add_argument("--out-path", type=str, help="Model out directory")
