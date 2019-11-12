@@ -124,6 +124,7 @@ data = removeSelfEdges(data, 0, 1)
 
 train_graphs, valid_graphs, test_graphs = load_graphs(data, self_loop)
 train_graph = train_graphs[-1]
+num_nodes = test_graphs[-1].number_of_nodes()
 
 ## Model definition
 
