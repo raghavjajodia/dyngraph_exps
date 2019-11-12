@@ -18,4 +18,4 @@ conda activate dgl_env
 srun python3 staticgcn_edgereg_oh.py \
     --out-path /misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/models/static_gcn/btcotc/eye/ \
  --data-path /misc/vlgscratch4/BrunaGroup/rj1408/dynamic_nn/data/btcotc/soc-sign-bitcoinotc.csv \
- -learning-rate 0.01  --n-epochs 100 --stpsize 20 --node-dim 128
+ --learning-rate 0.01  --n-epochs 100 --stpsize 20 --node-dim 128
